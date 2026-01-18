@@ -110,6 +110,6 @@ foreach side : sides
     )
 endforeach
 
-wchisp_info = run_target('wchisp_info',
+Wchisp_info = run_target('wchisp_info',
     command : [wchisp, 'info'],
 )
