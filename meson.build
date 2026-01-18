@@ -42,7 +42,12 @@ foreach side : sides
     )
 
     parse_json_py = files('parse_json.py')
-    cc_defs = run_command(python, parse_json_py, eval_json).stdout().strip().split('\n')
+    defs_file = custom_target(side + '_defs.txt',
+        input : eval_json,
+        output : side + '_defs.txt',
+        capture : true,
+        command : [python, parse_json_py, '@INPUT@'],
+    )
 
     side_h = custom_target(side + '.h',
         input : 'fak.py',
@@ -69,8 +74,8 @@ foreach side : sides
 
     compiler = generator(cc,
         output : '@BASENAME@.rel',
-        arguments : cc_args + cc_incs + cc_defs + ['-c', '@INPUT@', '-o', '@OUTPUT@'],
-        depends : [side_c, side_h],
+        arguments : cc_args + cc_incs + ['@' + defs_file.full_path(), '-c', '@INPUT@', '-o', '@OUTPUT@'],
+        depends : [side_c, side_h, defs_file],
     )
 
     sources = sources_common + [side_c]
