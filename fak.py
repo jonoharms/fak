@@ -90,6 +90,10 @@ def meson_configure():
     if result['__hash__'] == HASH_MANAGED:
         print("Info: This is a managed evaluation.")
 
+    with open('meson_opts.txt', 'w') as f:
+        for key, value in result['defines'].items():
+            f.write(f'-D{key}={value}\n')
+
     for key, value in result['meson_options'].items():
         subprocess.run(['meson', 'configure', f'-D{key}={value}'], check=True, cwd=BUILD_DIR)
     
