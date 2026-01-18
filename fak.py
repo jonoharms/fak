@@ -97,15 +97,6 @@ def subcmd_compile():
         subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
     subprocess.run(['meson', 'compile'], check=True, cwd=BUILD_DIR)
 
-# ... (rest of the file)
-
-if SUBCOMMAND == 'generate_defines':
-    subcmd_generate_defines()
-elif SUBCOMMAND == 'query_ncl':
-    subcmd_query_ncl()
-# ... (rest of the file)
-
-
 
 def wait_for_device():
     if shutil.which('wchisp') is None:
@@ -136,12 +127,6 @@ def subcmd_flash_central():
 
 
 def subcmd_flash_peripheral():
-    result = meson_configure()
-
-    if 'peripheral' not in result:
-        print("Error: Can't flash peripheral. The keyboard is not a split.")
-        sys.exit(1)
-
     subcmd_compile()
     wait_for_device()
     subprocess.run(['meson', 'compile', 'flash_peripheral'], check=True, cwd=BUILD_DIR)
@@ -182,9 +167,4 @@ elif SUBCOMMAND == 'clean':
 else:
     print("Error: Unknown subcommand")
     sys.exit(1)
-
-def subcmd_compile():
-    if not os.path.isdir(BUILD_DIR):
-        subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
-    subprocess.run(['meson', 'compile'], check=True, cwd=BUILD_DIR)
 
