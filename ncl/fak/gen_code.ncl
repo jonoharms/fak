@@ -45,6 +45,7 @@ let h_file = m%"
   %{codegen.defines ir.defines}
 
   #include "keyboard.h"
+  %{if ir.defines.LED_ENABLE then "#include \"ws2812.h\"" else ""}
 
   void keyboard_init_user();
   void keyboard_scan_user();
@@ -196,6 +197,16 @@ let c_file =
 m%"
   #include "ch55x.h"
 
+  %{if ir.defines.LED_ENABLE then
+      let pin = ir.defines.LED_PIN in
+      let port = std.to_string (std.number.truncate (pin / 10)) in
+      let port_idx = std.to_string (pin % 10) in
+      m%"
+        #define WS2812_COUNT %{std.to_string ir.defines.LED_COUNT}
+        SBIT(WS2812_PIN, P%{port}_ADDR, %{port_idx});
+      "%
+    else ""}
+
   %{if ir.side != 'peripheral then side_central_defs else ""}
 
   %{pin_defs_for ir.kscan.ins "IN"}
@@ -211,6 +222,7 @@ m%"
   }
 
   void keyboard_init_user() {
+  %{if ir.defines.LED_ENABLE then "ws2812_set_color(0, 10, 0, 0);" else ""}
   %{
     [[ir.kscan.cols, "COL"], [ir.kscan.rows, "ROW"]]
     |> std.array.flat_map (fun k =>
@@ -232,6 +244,7 @@ m%"
   }
 
   void keyboard_scan_user() {
+  %{if ir.defines.LED_ENABLE then "ws2812_show();" else ""}
   // Direct pins
   %{
     ir.kscan.direct

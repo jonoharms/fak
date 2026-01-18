@@ -19,6 +19,11 @@ inline void USB_EP3I_ready_send();
 inline void USB_EP3I_send_now();
 #endif
 
+#ifdef RAW_HID_ENABLE
+extern __xdata uint8_t raw_hid_rx_buf[];
+void USB_EP4I_write_now();
+#endif
+
 void USB_interrupt();
 void USB_init();
 

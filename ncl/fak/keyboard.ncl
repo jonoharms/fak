@@ -93,6 +93,10 @@ let KeyboardCentralSide = {
   encoders | Set (EncoderDef mcu) | default = [],
   usb_dev | UsbDev,
   debounce_ms | Uint8 | default = DEFAULT_DEBOUNCE_MS,
+  led | {
+    pin | ElementOf mcu.gpios,
+    count | Uint8,
+  } | optional,
   split | {
     channel | SplitChannel mcu,
     peripheral | KeyboardPeripheralSide,

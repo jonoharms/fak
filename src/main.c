@@ -1,6 +1,7 @@
 #include "ch55x.h"
 #include "keyboard.h"
 #include "time.h"
+#include "ws2812.h"
 
 #ifdef SPLIT_SIDE_CENTRAL
 #include "usb.h"
@@ -8,6 +9,28 @@
 void USB_interrupt();
 void USB_ISR() __interrupt(INT_NO_USB) {
     USB_interrupt();
+}
+#endif
+
+#ifdef RAW_HID_ENABLE
+__bit raw_hid_has_new_data = 0;
+
+void raw_hid_task() {
+    if (!raw_hid_has_new_data) return;
+
+    raw_hid_has_new_data = 0;
+
+    // Command: 0x01 (set LED color)
+    // Data: [LED_INDEX (1 byte), R (1 byte), G (1 byte), B (1 byte)]
+    if (raw_hid_rx_buf[0] == 0x01) {
+        uint8_t led_idx = raw_hid_rx_buf[1];
+        uint8_t r = raw_hid_rx_buf[2];
+        uint8_t g = raw_hid_rx_buf[3];
+        uint8_t b = raw_hid_rx_buf[4];
+
+        ws2812_set_color(led_idx, r, g, b);
+        ws2812_show();
+    }
 }
 #endif
 
@@ -72,5 +95,8 @@ static void main() {
 
     while (1) {
         keyboard_scan();
+#ifdef RAW_HID_ENABLE
+        raw_hid_task();
+#endif
     }
 }

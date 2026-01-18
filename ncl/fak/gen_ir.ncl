@@ -284,13 +284,19 @@ let _central_defines = {
   CAPS_WORD_ENABLE = is_custom_keys_of_type_of_keycodes_used 'fak [2, 3, 4],
   REPEAT_KEY_ENABLE = is_custom_keys_of_type_of_keycodes_used 'fak [5],
 
+  RAW_HID_ENABLE = true,
+
   COMBO_COUNT = combo_count,
   COMBO_REQUIRE_PRIOR_IDLE_MS_ENABLE = combos
     |> std.array.any (fun c => c.data.require_prior_idle_ms > 0),
   
   ENCODER_COUNT = encoder_count,
 
-  USB_NUM_INTERFACES = [true, CONSUMER_KEYS_ENABLE, MOUSE_KEYS_ENABLE]
+  LED_ENABLE = std.record.has_field "led" kb,
+  LED_COUNT = if std.record.has_field "led" kb then kb.led.count else 0,
+  LED_PIN = if std.record.has_field "led" kb then kb.led.pin else 0,
+
+  USB_NUM_INTERFACES = [true, CONSUMER_KEYS_ENABLE, MOUSE_KEYS_ENABLE, RAW_HID_ENABLE]
     |> std.array.filter ((==) true)
     |> std.array.length,
 
@@ -307,6 +313,9 @@ let _central_defines = {
   USB_EP1_SIZE = 8,
   USB_EP2_SIZE = 8,
   USB_EP3_SIZE = 4,
+#ifdef RAW_HID_ENABLE
+  USB_EP4_SIZE = 64,
+#endif
   KEY_EVENT_QUEUE_LEN = 32,
 } & util.record.only_if (combo_count > 0) {
   COMBO_KEY_QUEUE_LEN = combos
@@ -348,6 +357,10 @@ in {
   USB_EP3 = sizeof.usb_ep 3,
   MOUSE_SCROLL_DIRECTION = sizeof.int8_t,
   MOUSE_SCROLL_AT_TIME = sizeof.uint16_t,
+}
+& util.record.only_if _central_defines.RAW_HID_ENABLE {
+  USB_EP4I = sizeof.usb_ep 4,
+  USB_EP4O = sizeof.usb_ep 4,
 }
 & util.record.only_if (layer_count > 1) (
   let sizeof = sizeof & {
@@ -475,7 +488,9 @@ let encode_combo = fun combo key_idx => {
 let Kscan = std.contract.from_predicate (fun k =>
   let all_used_pins = k.ins @ k.cols @ k.rows @ encoder_pins_used @ feature_pins_used
     # Include soft serial pin
-    @ (if soft_serial_pin >= 0 then [soft_serial_pin] else []) in
+    @ (if soft_serial_pin >= 0 then [soft_serial_pin] else [])
+    # Include LED pin
+    @ (if std.record.has_field "led" kb then [kb.led.pin] else []) in
   (util.array.unique all_used_pins) == all_used_pins
 ) in
 

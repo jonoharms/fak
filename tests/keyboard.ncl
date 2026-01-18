@@ -8,6 +8,10 @@ let { CH552T, .. } = import "fak/mcus.ncl" in
     product_id = 47806, # 0xBABE
     product_ver = 256,  # 0x0100
   },
+  led = {
+    pin = 34,
+    count = 1,
+  },
   keys =
     let D = DirectPinKey in
     [
