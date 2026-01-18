@@ -41,8 +41,8 @@ foreach side : sides
         depend_files : ['.eval.json'],
     )
 
-    json = import('json')
-    eval = json.load(eval_json)
+    parse_json_py = files('parse_json.py')
+    cc_defs = run_command(python, parse_json_py, eval_json).stdout().strip().split('\n')
 
     side_h = custom_target(side + '.h',
         input : 'fak.py',
@@ -65,11 +65,6 @@ foreach side : sides
 
     foreach dir : inc_dirs
         cc_incs += '-I' + join_paths(dir_base, dir)
-    endforeach
-
-    cc_defs = []
-    foreach key, value : eval.get('defines', {})
-        cc_defs += '-D' + key + '=' + value
     endforeach
 
     compiler = generator(cc,
