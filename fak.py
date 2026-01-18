@@ -77,7 +77,7 @@ def subcmd_query_ncl():
     for key in selector.split('.'):
         result = result[key]
     
-    print(result, end='')
+    print(json.dumps(result), end='')
 
 
 def meson_configure():
