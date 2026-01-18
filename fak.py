@@ -83,30 +83,28 @@ def subcmd_query_ncl():
     print(result, end='')
 
 
-def meson_configure():
-    if not os.path.isdir(BUILD_DIR):
-        subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
-
+def subcmd_generate_defines():
     print("Evaluating Nickel files...")
     result = evaluate_ncl()
-
-    if result['__hash__'] == HASH_MANAGED:
-        print("Info: This is a managed evaluation.")
 
     if 'defines' in result:
         with open('meson_opts.txt', 'w') as f:
             for key, value in result['defines'].items():
                 f.write(f'-D{key}={value}\n')
 
-    for key, value in result['meson_options'].items():
-        subprocess.run(['meson', 'configure', f'-D{key}={value}'], check=True, cwd=BUILD_DIR)
-    
-    return result
-
-
 def subcmd_compile():
-    meson_configure()
+    if not os.path.isdir(BUILD_DIR):
+        subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
     subprocess.run(['meson', 'compile'], check=True, cwd=BUILD_DIR)
+
+# ... (rest of the file)
+
+if SUBCOMMAND == 'generate_defines':
+    subcmd_generate_defines()
+elif SUBCOMMAND == 'query_ncl':
+    subcmd_query_ncl()
+# ... (rest of the file)
+
 
 
 def wait_for_device():
@@ -167,7 +165,9 @@ def subcmd_clean():
 
 # TODO: Use argparse
 
-if SUBCOMMAND == 'query_ncl':
+if SUBCOMMAND == 'generate_defines':
+    subcmd_generate_defines()
+elif SUBCOMMAND == 'query_ncl':
     subcmd_query_ncl()
 elif SUBCOMMAND == 'compile':
     subcmd_compile()
@@ -182,3 +182,9 @@ elif SUBCOMMAND == 'clean':
 else:
     print("Error: Unknown subcommand")
     sys.exit(1)
+
+def subcmd_compile():
+    if not os.path.isdir(BUILD_DIR):
+        subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
+    subprocess.run(['meson', 'compile'], check=True, cwd=BUILD_DIR)
+
