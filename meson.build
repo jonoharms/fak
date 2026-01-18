@@ -33,7 +33,12 @@ if get_option('split')
 endif
 
 foreach side : sides
-    cc_defs = run_command(python, 'fak.py', 'query_defines', side).stdout().strip().split('\n')
+    defs_str = run_command(python, 'fak.py', 'query_defines', side).stdout().strip()
+    if defs_str == ''
+        cc_defs = []
+    else
+        cc_defs = defs_str.split('\n')
+    endif
 
     side_h = custom_target(side + '.h',
         input : 'fak.py',
