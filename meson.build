@@ -3,12 +3,6 @@ project('fak', 'c')
 cc_args = ['--opt-code-size']
 inc_dirs = ['src', 'src/inc']
 
-# Read meson_opts.txt and add to cc_args
-opts_file = join_paths(meson.current_source_dir(), '../meson_opts.txt')
-if run_command('test', '-s', opts_file).returncode() == 0
-    cc_args += run_command('cat', opts_file).stdout().strip().split('\n')
-endif
-
 sources_common = [
     'src/main.c',
     'src/time.c',
@@ -39,6 +33,17 @@ if get_option('split')
 endif
 
 foreach side : sides
+    eval_json = custom_target(side + '.json',
+        input : 'fak.py',
+        output : side + '.json',
+        capture : true,
+        command : [python, '@INPUT@', 'query_ncl', side],
+        depend_files : ['.eval.json'],
+    )
+
+    json = import('json')
+    eval = json.load(eval_json)
+
     side_h = custom_target(side + '.h',
         input : 'fak.py',
         output : side + '.h',
@@ -62,9 +67,14 @@ foreach side : sides
         cc_incs += '-I' + join_paths(dir_base, dir)
     endforeach
 
+    cc_defs = []
+    foreach key, value : eval.get('defines', {})
+        cc_defs += '-D' + key + '=' + value
+    endforeach
+
     compiler = generator(cc,
         output : '@BASENAME@.rel',
-        arguments : cc_args + cc_incs + ['-c', '@INPUT@', '-o', '@OUTPUT@'],
+        arguments : cc_args + cc_incs + cc_defs + ['-c', '@INPUT@', '-o', '@OUTPUT@'],
         depends : [side_c, side_h],
     )
 

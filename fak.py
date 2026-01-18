@@ -8,10 +8,7 @@ import sys
 import time
 import shutil
 
-try:
-    os.chdir(sys.path[0])
-except FileNotFoundError:
-    pass
+os.chdir(sys.path[0])
 
 EVAL_PATH = '.eval.json'
 BUILD_DIR = 'build'
@@ -83,18 +80,24 @@ def subcmd_query_ncl():
     print(result, end='')
 
 
-def subcmd_generate_defines():
+def meson_configure():
+    if not os.path.isdir(BUILD_DIR):
+        subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
+
     print("Evaluating Nickel files...")
     result = evaluate_ncl()
 
-    if 'defines' in result:
-        with open('../meson_opts.txt', 'w') as f:
-            for key, value in result['defines'].items():
-                f.write(f'-D{key}={value}\n')
+    if result['__hash__'] == HASH_MANAGED:
+        print("Info: This is a managed evaluation.")
+
+    for key, value in result['meson_options'].items():
+        subprocess.run(['meson', 'configure', f'-D{key}={value}'], check=True, cwd=BUILD_DIR)
+    
+    return result
+
 
 def subcmd_compile():
-    if not os.path.isdir(BUILD_DIR):
-        subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
+    meson_configure()
     subprocess.run(['meson', 'compile'], check=True, cwd=BUILD_DIR)
 
 
@@ -127,6 +130,12 @@ def subcmd_flash_central():
 
 
 def subcmd_flash_peripheral():
+    result = meson_configure()
+
+    if 'peripheral' not in result:
+        print("Error: Can't flash peripheral. The keyboard is not a split.")
+        sys.exit(1)
+
     subcmd_compile()
     wait_for_device()
     subprocess.run(['meson', 'compile', 'flash_peripheral'], check=True, cwd=BUILD_DIR)
@@ -150,9 +159,7 @@ def subcmd_clean():
 
 # TODO: Use argparse
 
-if SUBCOMMAND == 'generate_defines':
-    subcmd_generate_defines()
-elif SUBCOMMAND == 'query_ncl':
+if SUBCOMMAND == 'query_ncl':
     subcmd_query_ncl()
 elif SUBCOMMAND == 'compile':
     subcmd_compile()
@@ -167,4 +174,3 @@ elif SUBCOMMAND == 'clean':
 else:
     print("Error: Unknown subcommand")
     sys.exit(1)
-
