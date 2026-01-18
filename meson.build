@@ -3,11 +3,6 @@ project('fak', 'c')
 cc_args = ['--opt-code-size']
 inc_dirs = ['src', 'src/inc']
 
-opts_file = '../../build/meson_opts.txt'
-if run_command('test', '-s', opts_file).returncode() == 0
-    cc_args += run_command('cat', opts_file).stdout().strip().split('\n')
-endif
-
 sources_common = [
     'src/main.c',
     'src/time.c',
