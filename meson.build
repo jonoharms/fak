@@ -4,7 +4,7 @@ cc_args = ['--opt-code-size']
 inc_dirs = ['src', 'src/inc']
 
 # Read meson_opts.txt and add to cc_args
-opts_file = join_paths(meson.current_source_dir(), 'meson_opts.txt')
+opts_file = join_paths(meson.current_source_dir(), '../meson_opts.txt')
 if run_command('test', '-s', opts_file).returncode() == 0
     cc_args += run_command('cat', opts_file).stdout().strip().split('\n')
 endif

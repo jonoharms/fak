@@ -88,7 +88,7 @@ def subcmd_generate_defines():
     result = evaluate_ncl()
 
     if 'defines' in result:
-        with open('meson_opts.txt', 'w') as f:
+        with open('../meson_opts.txt', 'w') as f:
             for key, value in result['defines'].items():
                 f.write(f'-D{key}={value}\n')
 
