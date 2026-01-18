@@ -33,7 +33,7 @@ if get_option('split')
 endif
 
 foreach side : sides
-    eval_json = custom_target(side + '.json',
+    eval_json_target = custom_target(side + '.json',
         input : 'fak.py',
         output : side + '.json',
         capture : true,
@@ -41,13 +41,11 @@ foreach side : sides
         depend_files : ['.eval.json'],
     )
 
-    parse_json_py = files('parse_json.py')
-    defs_file = custom_target(side + '_defs.txt',
-        input : eval_json,
-        output : side + '_defs.txt',
-        capture : true,
-        command : [python, parse_json_py, '@INPUT@'],
-    )
+    eval_json = import('json').load(eval_json_target.full_path())
+    cc_defs = []
+    foreach key, value : eval_json.get('defines', {})
+        cc_defs += '-D' + key + '=' + value
+    endforeach
 
     side_h = custom_target(side + '.h',
         input : 'fak.py',
@@ -74,8 +72,8 @@ foreach side : sides
 
     compiler = generator(cc,
         output : '@BASENAME@.rel',
-        arguments : cc_args + cc_incs + ['@' + defs_file.full_path(), '-c', '@INPUT@', '-o', '@OUTPUT@'],
-        depends : [side_c, side_h, defs_file],
+        arguments : cc_args + cc_incs + cc_defs + ['-c', '@INPUT@', '-o', '@OUTPUT@'],
+        depends : [side_c, side_h],
     )
 
     sources = sources_common + [side_c]
