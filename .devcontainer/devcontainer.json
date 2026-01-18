@@ -1,0 +1,19 @@
+{
+	"name": "FAK Firmware Development",
+	"image": "mcr.microsoft.com/devcontainers/base:debian",
+	"features": {
+		"ghcr.io/devcontainers/features/python:1": {
+			"version": "3.11"
+		}
+	},
+	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y meson ninja-build python3-pip curl && pip3 install wchisp && curl -L https://github.com/tweag/nickel/releases/download/1.4.1/nickel-1.4.1-x86_64-unknown-linux-musl.tar.gz | tar -xz && sudo mv nickel /usr/local/bin/ && sudo apt-get install -y cargo && cargo install ncl-ls",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"arrterian.ncl-language-server"
+			]
+		}
+	}
+}
