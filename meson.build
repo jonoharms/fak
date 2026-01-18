@@ -33,19 +33,7 @@ if get_option('split')
 endif
 
 foreach side : sides
-    eval_json_target = custom_target(side + '.json',
-        input : 'fak.py',
-        output : side + '.json',
-        capture : true,
-        command : [python, '@INPUT@', 'query_ncl', side],
-        depend_files : ['.eval.json'],
-    )
-
-    eval_json = import('json').load(eval_json_target.full_path())
-    cc_defs = []
-    foreach key, value : eval_json.get('defines', {})
-        cc_defs += '-D' + key + '=' + value
-    endforeach
+    cc_defs = run_command(python, 'fak.py', 'query_defines', side).stdout().strip().split('\n')
 
     side_h = custom_target(side + '.h',
         input : 'fak.py',

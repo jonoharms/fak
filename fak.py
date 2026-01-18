@@ -80,6 +80,18 @@ def subcmd_query_ncl():
     print(json.dumps(result), end='')
 
 
+def subcmd_query_defines():
+    result = evaluate_ncl()
+    selector = sys.argv[2]
+
+    for key in selector.split('.'):
+        result = result[key]
+
+    if 'defines' in result:
+        for key, value in result['defines'].items():
+            print(f'-D{key}={value}')
+
+
 def meson_configure():
     if not os.path.isdir(BUILD_DIR):
         subprocess.run(['meson', 'setup', BUILD_DIR], check=True)
@@ -159,7 +171,10 @@ def subcmd_clean():
 
 # TODO: Use argparse
 
-if SUBCOMMAND == 'query_ncl':
+if SUBCOMMAND == 'query_defines':
+    subcmd_query_defines()
+elif SUBCOMMAND == 'query_ncl':
+    subcmd_query_ncl()
     subcmd_query_ncl()
 elif SUBCOMMAND == 'compile':
     subcmd_compile()
