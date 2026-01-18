@@ -94,7 +94,7 @@ foreach side : sides
         output : side + '.ihx',
         install : true,
         install_dir : 'firmware',
-        command : [cc, cc_args, '-o', '@OUTPUT@', '@INPUT@'],
+        command : [cc, cc_args, cc_defs, '-o', '@OUTPUT@', '@INPUT@'],
     )
 
     flash = run_target('flash_' + side,
