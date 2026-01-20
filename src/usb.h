@@ -21,6 +21,7 @@ inline void USB_EP3I_send_now();
 
 #ifdef RAW_HID_ENABLE
 extern __xdata uint8_t raw_hid_rx_buf[];
+extern __bit raw_hid_has_new_data;
 void USB_EP4I_write_now();
 #endif
 

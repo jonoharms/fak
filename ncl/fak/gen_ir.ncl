@@ -328,6 +328,11 @@ let _central_defines = {
     |> util.array.max,
 } in
 
+let ch55x_val = match {
+  'CH552 => 2,
+  'CH559 => 9,
+} kb.mcu.family in
+
 let _xaddr_sizes = let
   sizeof = {
     usb_ep = fun i =>
@@ -340,9 +345,10 @@ let _xaddr_sizes = let
     uint32_t = 4,
     fak_key_state_t = uint8_t + uint32_t,
     fak_key_event_t = (uint8_t * 3) + uint16_t,
-  }
+  } in
+  let is_ch552_raw_hid = ch55x_val == 2 && _central_defines.RAW_HID_ENABLE
 in {
-  USB_EP0 = sizeof.usb_ep 0,
+  USB_EP0 = if is_ch552_raw_hid then 192 else sizeof.usb_ep 0,
   USB_EP1 = sizeof.usb_ep 1,
   USB_TX_LEN = sizeof.uint8_t,
   LAST_TAP_TIMESTAMP = sizeof.uint16_t,
@@ -358,7 +364,7 @@ in {
   MOUSE_SCROLL_DIRECTION = sizeof.int8_t,
   MOUSE_SCROLL_AT_TIME = sizeof.uint16_t,
 }
-& util.record.only_if _central_defines.RAW_HID_ENABLE {
+& util.record.only_if (_central_defines.RAW_HID_ENABLE && !is_ch552_raw_hid) {
   USB_EP4I = sizeof.usb_ep 4,
   USB_EP4O = sizeof.usb_ep 4,
 }
@@ -427,13 +433,19 @@ let _xaddr_defines =
   |> util.array.enumerate
   |> std.array.map (fun { index, value } => { "XADDR_%{std.array.at index names}" = value })
   |> std.array.fold_left (&) {}
+  |> (fun defines =>
+      if (ch55x_val == 2 && _central_defines.RAW_HID_ENABLE) then
+        defines & {
+          XADDR_USB_EP4O = defines.XADDR_USB_EP0 + 64,
+          XADDR_USB_EP4I = defines.XADDR_USB_EP0 + 128,
+        }
+      else
+        defines
+  )
 in
 
 let _defines = {
-  CH55X = match {
-    'CH552 => 2,
-    'CH559 => 9,
-  } kb.mcu.family,
+  CH55X = ch55x_val,
 
   SPLIT_ENABLE = side != 'self,
   SPLIT_SIDE_CENTRAL = side != 'peripheral,

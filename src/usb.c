@@ -790,7 +790,7 @@ void USB_init() {
 
 #ifdef RAW_HID_ENABLE
 #if CH55X == 2
-#define UEP_DMA4() UEP4_DMA = XADDR_USB_EP4;
+#define UEP_DMA4()
 #elif CH55X == 9
 #define UEP_DMA4() {\
     UEP4_DMA_H = MSB(XADDR_USB_EP4);\
@@ -821,7 +821,7 @@ void USB_init() {
 
 #ifdef RAW_HID_ENABLE
     UEP4_T_LEN = USB_EP4_SIZE;
-    UEP_DMA(4)
+    UEP_DMA4()
     UEP4_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;
 #endif
 

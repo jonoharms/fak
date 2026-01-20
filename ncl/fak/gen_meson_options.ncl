@@ -23,6 +23,7 @@ let use_soft_serial = std.record.has_field "SPLIT_SOFT_SERIAL_PIN" ir.defines in
     "src/macro.c" = ir.defines.MACRO_KEYS_ENABLE,
     "src/caps_word.c" = ir.defines.CAPS_WORD_ENABLE,
     "src/soft_serial.c" = use_soft_serial,
+    "src/ws2812.c" = ir.defines.LED_ENABLE,
   },
   extra_periph_sources = as_sources
   {
