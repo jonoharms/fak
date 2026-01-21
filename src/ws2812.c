@@ -44,22 +44,33 @@ void ws2812_show(void) {
             if (byte & 0x80) {
                 // Send '1'
                 WS2812_PIN = 1;
-                // Delay T1H (need ~800ns)
+                // T1H: ~800ns (~19 cycles) -> 1 set + 18 nops
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop");
                 
                 WS2812_PIN = 0;
-                // Delay T1L (need ~450ns) - short, loop overhead helps
+                // T1L: ~450ns (~11 cycles) -> 1 clear + ~10 nops (minus loop overhead)
+                // Loop overhead is likely 4-5 cycles. Let's add 6 nops.
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop");
             } else {
                 // Send '0'
                 WS2812_PIN = 1;
-                // Delay T0H (need ~400ns) - very short
-                __asm__("nop"); 
+                // T0H: ~400ns (~10 cycles) -> 1 set + 9 nops
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop");
 
                 WS2812_PIN = 0;
-                // Delay T0L (need ~850ns)
+                // T0L: ~850ns (~20 cycles) -> 1 clear + ~19 nops (minus loop overhead)
+                // Loop overhead is likely 4-5 cycles. Let's add 15 nops.
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
-                __asm__("nop"); __asm__("nop"); 
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                __asm__("nop"); __asm__("nop"); __asm__("nop");
             }
             byte <<= 1;
         }
