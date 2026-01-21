@@ -32,20 +32,64 @@ const PID: u16 = 0xBABE;
 const LED_COUNT: u8 = 6;
 
 fn main() -> Result<()> {
+
     let cli = Cli::parse();
+
+
+
     let api = HidApi::new().context("Failed to initialize HID API")?;
 
+    
+
     let device = loop {
-        match api.open(VID, PID) {
-            Ok(dev) => break dev,
-            Err(_) => {
-                println!("Waiting for device {:04x}:{:04x}...", VID, PID);
-                thread::sleep(Duration::from_secs(1));
+
+        // Find device by Usage Page 0xFF00 (Vendor Defined)
+
+        let mut found_path = None;
+
+        for dev in api.device_list() {
+
+            if dev.vendor_id() == VID && dev.product_id() == PID && dev.usage_page() == 0xFF00 {
+
+                found_path = Some(dev.path().to_owned());
+
+                break;
+
             }
+
         }
+
+
+
+        if let Some(path) = found_path {
+
+            match api.open_path(&path) {
+
+                Ok(dev) => break dev,
+
+                Err(e) => {
+
+                    println!("Failed to open device: {}", e);
+
+                }
+
+            }
+
+        }
+
+        
+
+        println!("Waiting for Raw HID device {:04x}:{:04x} (Usage Page 0xFF00)...", VID, PID);
+
+        thread::sleep(Duration::from_secs(1));
+
     };
 
+
+
     if cli.test {
+
+
         println!("Starting LED test loop. Press Ctrl+C to stop.");
         loop {
             // Red Chase

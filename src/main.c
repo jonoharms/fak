@@ -29,33 +29,53 @@ void raw_hid_task(void) {
 
 
 
-    // Report ID is at index 0 (0x01)
+    // --- DEBUG PACKET DUMP ---
 
-    if (raw_hid_rx_buf[0] != 0x01) return;
+    uint8_t b0 = raw_hid_rx_buf[0];
 
+    uint8_t b1 = raw_hid_rx_buf[1];
 
-
-    // Command at index 1
-
-    if (raw_hid_rx_buf[1] == 0x01) {
-
-        uint8_t led_idx = raw_hid_rx_buf[2];
-
-        uint8_t r = raw_hid_rx_buf[3];
-
-        uint8_t g = raw_hid_rx_buf[4];
-
-        uint8_t b = raw_hid_rx_buf[5];
+    uint8_t b2 = raw_hid_rx_buf[2];
 
 
 
-        ws2812_set_color(led_idx, r, g, b);
+    // LED 0: Byte 0 (Should be 0x01 for Report ID)
 
-        ws2812_show();
+    if (b0 == 0x01)      ws2812_set_color(0, 50, 0, 0); // Red = OK
 
-    }
+    else if (b0 == 0x00) ws2812_set_color(0, 0, 50, 0); // Green = Zero
+
+    else                 ws2812_set_color(0, 0, 0, 50); // Blue = Other
+
+
+
+    // LED 1: Byte 1 (Should be 0x01 for Command)
+
+    if (b1 == 0x01)      ws2812_set_color(1, 50, 0, 0); // Red = OK
+
+    else if (b1 == 0x00) ws2812_set_color(1, 0, 50, 0); // Green = Zero
+
+    else                 ws2812_set_color(1, 0, 0, 50); // Blue = Other
+
+
+
+    // LED 2: Byte 2 (Should be 0x00 for Index)
+
+    if (b2 == 0x00)      ws2812_set_color(2, 50, 0, 0); // Red = OK
+
+    else if (b2 == 0x01) ws2812_set_color(2, 0, 50, 0); // Green = 0x01
+
+    else                 ws2812_set_color(2, 0, 0, 50); // Blue = Other
+
+
+
+    ws2812_show();
+
+    // -------------------------
 
 }
+
+
 
 
 #endif

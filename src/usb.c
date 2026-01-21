@@ -1,6 +1,7 @@
 #include "usb.h"
 #include "ch55x.h"
 #include "math.h"
+#include "ws2812.h"
 
 #include <string.h>
 
@@ -682,10 +683,11 @@ inline static void USB_EP4_IN() {
     UEP4_CTRL = UEP4_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
 }
 
-inline static void USB_EP4_OUT() {
+inline static void USB_EP4_OUT(void) {
     USB_EP4O_read_now();
     UEP4_CTRL = UEP4_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
     raw_hid_has_new_data = 1;
+    ws2812_set_color(5, 50, 50, 50); // DEBUG: Interrupt Fired
 }
 #endif
 
