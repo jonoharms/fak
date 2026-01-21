@@ -1,6 +1,6 @@
+use anyhow::{Context, Result};
 use clap::Parser;
 use hidapi::HidApi;
-use anyhow::{Result, Context};
 use std::{thread, time::Duration};
 
 #[derive(Parser)]
@@ -33,31 +33,44 @@ const LED_COUNT: u8 = 6;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-
     let api = HidApi::new().context("Failed to initialize HID API")?;
-    let device = api.open(VID, PID).context(format!("Failed to open device {:04x}:{:04x}", VID, PID))?;
+
+    let device = loop {
+        match api.open(VID, PID) {
+            Ok(dev) => break dev,
+            Err(_) => {
+                println!("Waiting for device {:04x}:{:04x}...", VID, PID);
+                thread::sleep(Duration::from_secs(1));
+            }
+        }
+    };
 
     if cli.test {
         println!("Starting LED test loop. Press Ctrl+C to stop.");
         loop {
             // Red Chase
             run_chase(&device, 255, 0, 0)?;
+            thread::sleep(Duration::from_millis(500));
             // Green Chase
             run_chase(&device, 0, 255, 0)?;
+            thread::sleep(Duration::from_millis(500));
             // Blue Chase
             run_chase(&device, 0, 0, 255)?;
-            
+            thread::sleep(Duration::from_millis(500));
             // All White
             set_all(&device, 50, 50, 50)?;
             thread::sleep(Duration::from_millis(500));
-            
+
             // All Off
             set_all(&device, 0, 0, 0)?;
             thread::sleep(Duration::from_millis(500));
         }
     } else {
         send_color(&device, cli.index, cli.red, cli.green, cli.blue)?;
-        println!("Sent LED update: Index={}, R={}, G={}, B={}", cli.index, cli.red, cli.green, cli.blue);
+        println!(
+            "Sent LED update: Index={}, R={}, G={}, B={}",
+            cli.index, cli.red, cli.green, cli.blue
+        );
     }
 
     Ok(())
@@ -90,6 +103,7 @@ fn run_chase(device: &hidapi::HidDevice, r: u8, g: u8, b: u8) -> Result<()> {
 fn set_all(device: &hidapi::HidDevice, r: u8, g: u8, b: u8) -> Result<()> {
     for i in 0..LED_COUNT {
         send_color(device, i, r, g, b)?;
+        thread::sleep(Duration::from_millis(10));
     }
     Ok(())
 }
