@@ -55,7 +55,7 @@ extern __code uint8_t split_periph_encoder_indices[SPLIT_PERIPH_ENCODER_COUNT];
 #endif
 #endif
 
-uint16_t get_last_tap_timestamp(void) {
+uint16_t get_last_tap_timestamp() {
     return last_tap_timestamp;
 }
 
@@ -259,7 +259,7 @@ static void subhandle(uint8_t handle_event) {
     }
 }
 
-static void handle_key_events(void) {
+static void handle_key_events() {
     if (key_event_queue_get_bsize() == 0 && key_event_queue_get_size()) {
         subhandle(HANDLE_EVENT_PRE_SCAN);
         return;
@@ -522,7 +522,7 @@ static void split_periph_scan() {
 }
 #endif
 
-void keyboard_init(void) {
+void keyboard_init() {
     for (uint8_t i = KEY_COUNT; i;) {
         key_states[--i].status = 0;
     }
@@ -544,7 +544,7 @@ void keyboard_init(void) {
     keyboard_init_user();
 }
 
-void keyboard_scan(void) {
+void keyboard_scan() {
     keyboard_scan_user();
 #ifdef SPLIT_ENABLE
     split_periph_scan();

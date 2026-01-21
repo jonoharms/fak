@@ -5,8 +5,8 @@
 
 uint8_t USB_EP1I_read(uint8_t idx);
 void USB_EP1I_write(uint8_t idx, uint8_t value);
-inline void USB_EP1I_ready_send(void);
-inline void USB_EP1I_send_now(void);
+inline void USB_EP1I_ready_send();
+inline void USB_EP1I_send_now();
 
 #ifdef CONSUMER_KEYS_ENABLE
 void USB_EP2I_write_now(uint8_t idx, uint16_t value);
@@ -15,17 +15,17 @@ void USB_EP2I_write_now(uint8_t idx, uint16_t value);
 #ifdef MOUSE_KEYS_ENABLE
 uint8_t USB_EP3I_read(uint8_t idx);
 void USB_EP3I_write(uint8_t idx, uint8_t value);
-inline void USB_EP3I_ready_send(void);
-inline void USB_EP3I_send_now(void);
+inline void USB_EP3I_ready_send();
+inline void USB_EP3I_send_now();
 #endif
 
 #ifdef RAW_HID_ENABLE
 extern __xdata uint8_t raw_hid_rx_buf[];
 extern __bit raw_hid_has_new_data;
-void USB_EP4I_write_now(void);
+void USB_EP4I_write_now();
 #endif
 
-void USB_interrupt(void);
-void USB_init(void);
+void USB_interrupt();
+void USB_init();
 
 #endif // __USB_H__

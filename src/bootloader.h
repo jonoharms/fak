@@ -3,7 +3,7 @@
 
 #define BOOT_ADDR 0x3800
 
-inline void bootloader(void);
-inline void sw_reset(void);
+inline void bootloader();
+inline void sw_reset();
 
 #endif // __BOOTLOADER_H__

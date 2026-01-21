@@ -16,8 +16,6 @@ void ws2812_set_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
 
 // Internal ASM worker function
 // len passed in DPL
-#pragma save
-#pragma disable_warning 85
 void ws2812_asm_show(uint8_t len) __naked {
     __asm
         mov r7, dpl         ; Save length
@@ -92,7 +90,6 @@ void ws2812_asm_show(uint8_t len) __naked {
         ret
     __endasm;
 }
-#pragma restore
 
 void ws2812_show(void) {
     EA = 0;

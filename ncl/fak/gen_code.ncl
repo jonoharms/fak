@@ -57,8 +57,8 @@ let h_file = m%"
       "%
     else ""}
 
-  void keyboard_init_user(void);
-  void keyboard_scan_user(void);
+  void keyboard_init_user();
+  void keyboard_scan_user();
 "% in
 
 let side_central_defs =
@@ -221,7 +221,7 @@ m%"
     |> util.array.join "\n"
   }
 
-  void keyboard_init_user(void) {
+  void keyboard_init_user() {
   %{if ir.defines.LED_ENABLE then "ws2812_set_color(0, 10, 0, 0);" else ""}
   %{
     [[ir.kscan.cols, "COL"], [ir.kscan.rows, "ROW"]]
@@ -237,13 +237,13 @@ m%"
   }
   }
 
-  static void matrix_switch_delay(void) {
+  static void matrix_switch_delay() {
     for (uint8_t i = 16; i; i--) {
       __asm__ ("nop");
     }
   }
 
-  void keyboard_scan_user(void) {
+  void keyboard_scan_user() {
   %{if ir.defines.LED_ENABLE then "ws2812_show();" else ""}
   // Direct pins
   %{

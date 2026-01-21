@@ -111,7 +111,7 @@ void combo_push_key_event(uint8_t key_idx, uint8_t pressed) {
     push_key_event(key_idx, 0);
 }
 
-void combo_handle(void) {
+void combo_handle() {
     // Reset ref counters except owned
     for (uint8_t i = combo_key_queue.size; i;) {
         uint8_t *ref_count = &combo_key_queue.q[--i].ref_count;
@@ -220,7 +220,7 @@ exit_outer:
     }
 }
 
-void combo_init(void) {
+void combo_init() {
     for (uint8_t i = COMBO_COUNT; i;) {
         combo_states[--i].state = 0;
     }
