@@ -1,0 +1,3 @@
+# Rule for FAK Keyboard Raw HID
+SUBSYSTEM=="usb", ATTRS{idVendor}=="cafe", ATTRS{idProduct}=="babe", MODE="0666"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="cafe", ATTRS{idProduct}=="babe", MODE="0666"
