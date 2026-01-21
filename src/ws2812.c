@@ -45,7 +45,7 @@ void ws2812_show(void) {
                 // Send '1'
                 WS2812_PIN = 1;
                 // T1H: ~800ns (~19 cycles) -> 1 set + 18 nops
-                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
+                // Reduced to 14 nops to be safe against overhead/2-cycle instructions
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
@@ -60,9 +60,9 @@ void ws2812_show(void) {
                 // Send '0'
                 WS2812_PIN = 1;
                 // T0H: ~400ns (~10 cycles) -> 1 set + 9 nops
+                // Reduced to 6 nops
                 __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
-                __asm__("nop"); __asm__("nop"); __asm__("nop"); __asm__("nop");
-                __asm__("nop");
+                __asm__("nop"); __asm__("nop");
 
                 WS2812_PIN = 0;
                 // T0L: ~850ns (~20 cycles) -> 1 clear + ~19 nops (minus loop overhead)

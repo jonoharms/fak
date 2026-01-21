@@ -100,6 +100,25 @@ static void main() {
     P3_DIR = 0xFF;
 #endif
 
+#ifdef WS2812_COUNT
+    // Configure P3.4 (LED) as Push-Pull
+    // P3_MOD_OC &= ~(1<<4);
+    // P3_DIR_PU |= (1<<4);
+    // However, P3_MOD_OC/DIR_PU are SFRs.
+    P3_MOD_OC &= 0xEF;
+    P3_DIR_PU |= 0x10;
+    WS2812_PIN = 0;
+
+    // LED Chase on startup
+    for (uint8_t i = 0; i < WS2812_COUNT; i++) {
+        ws2812_set_color(i, 20, 0, 20);
+        ws2812_show();
+        delay(1000 / WS2812_COUNT);
+        ws2812_set_color(i, 0, 0, 0);
+    }
+    ws2812_show();
+#endif
+
     EA = 1;
 
     while (1) {
