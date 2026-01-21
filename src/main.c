@@ -2,6 +2,9 @@
 #include "keyboard.h"
 #include "time.h"
 #include "ws2812.h"
+#include "bootloader.h"
+
+SBIT(BootKey, 0x90, 1); // P1.1
 
 #ifdef SPLIT_SIDE_CENTRAL
 #include "usb.h"
@@ -67,6 +70,12 @@ static void UART0_init() {
 
 static void main() {
     CLK_init();
+
+    // Check if bootloader key (P1.1) is pressed (low)
+    if (BootKey == 0) {
+        bootloader();
+    }
+
 #if defined(SPLIT_ENABLE) && !defined(SPLIT_SOFT_SERIAL_PIN)
     UART0_init();
 #endif
