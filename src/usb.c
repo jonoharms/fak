@@ -393,7 +393,7 @@ __code uint8_t USB_STR3_DESCR[] = {
 #endif
 #endif
 
-static void USB_EP0_tx() {
+static void USB_EP0_tx(void) {
     UEP0_T_LEN = MIN(usb_tx_len, USB_EP0_SIZE);
 
     if (UEP0_T_LEN) {
@@ -403,7 +403,7 @@ static void USB_EP0_tx() {
     }
 }
 
-inline static void USB_EP0_SETUP() {
+inline static void USB_EP0_SETUP(void) {
     UEP0_CTRL = bUEP_R_TOG | bUEP_T_TOG;
 
     USB_SETUP_REQ *setupPacket = (USB_SETUP_REQ *) EP0_buffer;
@@ -569,7 +569,7 @@ inline static void USB_EP0_SETUP() {
     UEP0_CTRL |= UEP_R_RES_STALL | UEP_T_RES_STALL;
 }
 
-inline static void USB_EP0_IN() {
+inline static void USB_EP0_IN(void) {
     if (!usb_tx_len) return;
     
     if (UDEV_CTRL & bUD_GP_BIT) {
@@ -582,7 +582,7 @@ inline static void USB_EP0_IN() {
     }
 }
 
-inline static void USB_EP0_OUT() {}
+inline static void USB_EP0_OUT(void) {}
 
 uint8_t USB_EP1I_read(uint8_t idx) {
     IE_USB = 0;
@@ -598,16 +598,16 @@ void USB_EP1I_write(uint8_t idx, uint8_t value) {
     USB_EP1I_ready_send();
 }
 
-inline void USB_EP1I_ready_send() {
+inline void USB_EP1I_ready_send(void) {
     UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK;
 }
 
-inline void USB_EP1I_send_now() {
+inline void USB_EP1I_send_now(void) {
     USB_EP1I_ready_send();
     while (!(UEP1_CTRL & UEP_T_RES_NAK));
 }
 
-inline static void USB_EP1_IN() {
+inline static void USB_EP1_IN(void) {
     UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
 }
 
@@ -621,7 +621,7 @@ void USB_EP2I_write_now(uint8_t idx, uint16_t value) {
     while (!(UEP2_CTRL & UEP_T_RES_NAK));
 }
 
-inline static void USB_EP2_IN() {
+inline static void USB_EP2_IN(void) {
     UEP2_CTRL = UEP2_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
 }
 #endif
@@ -641,16 +641,16 @@ void USB_EP3I_write(uint8_t idx, uint8_t value) {
     USB_EP3I_ready_send();
 }
 
-inline void USB_EP3I_ready_send() {
+inline void USB_EP3I_ready_send(void) {
     UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK;
 }
 
-inline void USB_EP3I_send_now() {
+inline void USB_EP3I_send_now(void) {
     USB_EP3I_ready_send();
     while (!(UEP3_CTRL & UEP_T_RES_NAK));
 }
 
-inline static void USB_EP3_IN() {
+inline static void USB_EP3_IN(void) {
     UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
 }
 #endif
@@ -659,7 +659,7 @@ inline static void USB_EP3_IN() {
 __xdata uint8_t raw_hid_rx_buf[USB_EP4_SIZE];
 __xdata uint8_t raw_hid_tx_buf[USB_EP4_SIZE];
 
-void USB_EP4I_write_now() {
+void USB_EP4I_write_now(void) {
     IE_USB = 0;
     memcpy(EP4I_buffer, raw_hid_tx_buf, USB_EP4_SIZE);
     IE_USB = 1;
@@ -668,24 +668,24 @@ void USB_EP4I_write_now() {
     while (!(UEP4_CTRL & UEP_T_RES_NAK));
 }
 
-void USB_EP4O_read_now() {
+void USB_EP4O_read_now(void) {
     IE_USB = 0;
     memcpy(raw_hid_rx_buf, EP4O_buffer, USB_EP4_SIZE);
     IE_USB = 1;
 }
 
-inline static void USB_EP4_IN() {
+inline static void USB_EP4_IN(void) {
     UEP4_CTRL = UEP4_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
 }
 
-inline static void USB_EP4_OUT() {
+inline static void USB_EP4_OUT(void) {
     USB_EP4O_read_now();
     UEP4_CTRL = UEP4_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
     raw_hid_has_new_data = 1;
 }
 #endif
 
-inline void USB_reset() {
+inline void USB_reset(void) {
     usb_tx_len = 0;
     hid_protocol_keyboard = 1;
 #ifdef MOUSE_KEYS_ENABLE
@@ -695,7 +695,7 @@ inline void USB_reset() {
 
 #pragma save
 #pragma nooverlay
-void USB_interrupt() {
+void USB_interrupt(void) {
     if (UIF_TRANSFER) {
         UEP0_T_LEN = 0;
         uint8_t endp = USB_INT_ST & MASK_UIS_ENDP;
@@ -751,7 +751,7 @@ void USB_interrupt() {
 }
 #pragma restore
 
-void USB_init() {
+void USB_init(void) {
     // Reset USB
     USB_CTRL |= bUC_RESET_SIE | bUC_CLR_ALL;
     USB_CTRL &= ~bUC_CLR_ALL;

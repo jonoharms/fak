@@ -9,8 +9,8 @@ SBIT(BootKey, 0x90, 1); // P1.1
 #ifdef SPLIT_SIDE_CENTRAL
 #include "usb.h"
 
-void USB_interrupt();
-void USB_ISR() __interrupt(INT_NO_USB) {
+void USB_interrupt(void);
+void USB_ISR(void) __interrupt(INT_NO_USB) {
     USB_interrupt();
 }
 #endif
@@ -18,7 +18,7 @@ void USB_ISR() __interrupt(INT_NO_USB) {
 #ifdef RAW_HID_ENABLE
 __bit raw_hid_has_new_data = 0;
 
-void raw_hid_task() {
+void raw_hid_task(void) {
     if (!raw_hid_has_new_data) return;
 
     raw_hid_has_new_data = 0;
@@ -37,20 +37,20 @@ void raw_hid_task() {
 }
 #endif
 
-void TMR0_interrupt();
-void TMR0_ISR() __interrupt(INT_NO_TMR0) {
+void TMR0_interrupt(void);
+void TMR0_ISR(void) __interrupt(INT_NO_TMR0) {
     TMR0_interrupt();
 }
 
 #if defined(SPLIT_ENABLE) && !defined(SPLIT_SOFT_SERIAL_PIN)
 #ifdef SPLIT_SIDE_PERIPHERAL
-void UART0_interrupt();
-void UART0_ISR() __interrupt(INT_NO_UART0) {
+void UART0_interrupt(void);
+void UART0_ISR(void) __interrupt(INT_NO_UART0) {
     UART0_interrupt();
 }
 #endif
 
-static void UART0_init() {
+static void UART0_init(void) {
     // UART0 @ Timer1, 750k bps
     SM0 = 0;
     SM1 = 1;
@@ -68,7 +68,7 @@ static void UART0_init() {
 }
 #endif
 
-static void main() {
+static void main(void) {
     CLK_init();
 
     // Check if bootloader key (P1.1) is pressed (low)

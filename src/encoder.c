@@ -6,7 +6,7 @@ __xdata __at(XADDR_ENCODER_LAST_NUM) uint8_t encoder_last_num[(ENCODER_COUNT + 3
 
 extern __code fak_encoder_def_t encoder_defs[ENCODER_COUNT];
 
-void encoder_init() {
+void encoder_init(void) {
     for (uint8_t i = ENCODER_COUNT; i;) {
         encoder_steps[--i] = 0;
     }

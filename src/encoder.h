@@ -9,7 +9,7 @@ typedef struct {
     uint8_t key_idx_ccw;
 } fak_encoder_def_t;
 
-void encoder_init();
+void encoder_init(void);
 void encoder_scan(uint8_t i, uint8_t reading);
 
 #endif // __ENCODER_H__

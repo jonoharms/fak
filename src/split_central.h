@@ -40,10 +40,10 @@ void handle_non_future(uint32_t key_code, uint8_t down);
 void tap_non_future(uint32_t key_code);
 uint32_t get_real_key_code(uint8_t key_idx);
 uint8_t get_future_type(uint32_t key_code);
-uint16_t get_last_tap_timestamp();
+uint16_t get_last_tap_timestamp(void);
 void key_state_inform(uint8_t key_idx, uint8_t down);
 
-void keyboard_init();
-void keyboard_scan();
+void keyboard_init(void);
+void keyboard_scan(void);
 
 #endif // __SPLIT_CENTRAL_H__

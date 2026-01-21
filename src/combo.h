@@ -17,7 +17,7 @@ typedef struct {
 } fak_combo_def_t;
 
 void combo_push_key_event(uint8_t key_idx, uint8_t pressed);
-void combo_handle();
-void combo_init();
+void combo_handle(void);
+void combo_init(void);
 
 #endif // __COMBO_H__

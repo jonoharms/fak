@@ -45,7 +45,7 @@ uint32_t get_real_key_code(uint8_t key_idx) {
 
 #if LAYER_COUNT > 1
 
-uint8_t get_highest_layer_idx() {
+uint8_t get_highest_layer_idx(void) {
     for (uint8_t layer_idx = LAYER_COUNT - 1; layer_idx; layer_idx--) {
         if (is_layer_on(layer_idx))
             return layer_idx;
@@ -53,7 +53,7 @@ uint8_t get_highest_layer_idx() {
     return 0;
 }
 
-uint8_t get_default_layer_idx() {
+uint8_t get_default_layer_idx(void) {
     for (uint8_t layer_idx = 0; layer_idx < LAYER_COUNT; layer_idx++) {
         if (persistent_layer_state & (1 << layer_idx))
             return layer_idx;
@@ -61,7 +61,7 @@ uint8_t get_default_layer_idx() {
     return 0;
 }
 
-static void on_layer_state_change() {
+static void on_layer_state_change(void) {
 #if CONDITIONAL_LAYER_COUNT > 0
     for (uint8_t i = 0; i < CONDITIONAL_LAYER_COUNT; i++) {
         __code fak_conditional_layer_def_t *cl = &conditional_layers[i];

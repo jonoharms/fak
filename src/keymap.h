@@ -41,8 +41,8 @@ typedef struct {
 extern __code fak_conditional_layer_def_t conditional_layers[CONDITIONAL_LAYER_COUNT];
 #endif
 
-uint8_t get_highest_layer_idx();
-uint8_t get_default_layer_idx();
+uint8_t get_highest_layer_idx(void);
+uint8_t get_default_layer_idx(void);
 void set_default_layer_idx(uint8_t layer_idx);
 
 void set_layer_state(fak_layer_state_t state);

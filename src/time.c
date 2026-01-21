@@ -21,7 +21,7 @@ void delay(uint16_t ms) {
     }
 }
 
-uint16_t get_timer() {
+uint16_t get_timer(void) {
     uint16_t ret;
     ET0 = 0;
     ret = timer_1ms;
@@ -29,16 +29,16 @@ uint16_t get_timer() {
     return ret;
 }
 
-static inline void enter_safe_mode() {
+static inline void enter_safe_mode(void) {
     SAFE_MOD = 0x55;
     SAFE_MOD = 0xAA;
 }
 
-static inline void exit_safe_mode() {
+static inline void exit_safe_mode(void) {
     SAFE_MOD = 0x00;
 }
 
-void CLK_init() {
+void CLK_init(void) {
     enter_safe_mode();
 #if CH55X == 2
     // Internal clock @ 24MHz
@@ -52,14 +52,14 @@ void CLK_init() {
 
 #pragma save
 #pragma nooverlay
-void TMR0_interrupt() {
+void TMR0_interrupt(void) {
     TL0 = 0x30;
     TH0 = 0xF8; // 65536 - 2000 = 63536
     timer_1ms++;
 }
 #pragma restore
 
-void TMR0_init() {
+void TMR0_init(void) {
     TL0 = 0x30;
     TH0 = 0xF8; // 65536 - 2000 = 63536
     TMOD |= bT0_M0;
