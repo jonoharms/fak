@@ -10,7 +10,8 @@ SBIT(BootKey, 0x90, 1); // P1.1
 #include "usb.h"
 
 void USB_interrupt();
-void USB_ISR() __interrupt(INT_NO_USB) {
+void USB_ISR() __interrupt(INT_NO_USB)
+{
     USB_interrupt();
 }
 #endif
@@ -18,39 +19,64 @@ void USB_ISR() __interrupt(INT_NO_USB) {
 #ifdef RAW_HID_ENABLE
 __bit raw_hid_has_new_data = 0;
 
-void raw_hid_task() {
+void raw_hid_task(void) {
+
     if (!raw_hid_has_new_data) return;
+
+
 
     raw_hid_has_new_data = 0;
 
-    // Command: 0x01 (set LED color)
-    // Data: [LED_INDEX (1 byte), R (1 byte), G (1 byte), B (1 byte)]
-    if (raw_hid_rx_buf[0] == 0x01) {
-        uint8_t led_idx = raw_hid_rx_buf[1];
-        uint8_t r = raw_hid_rx_buf[2];
-        uint8_t g = raw_hid_rx_buf[3];
-        uint8_t b = raw_hid_rx_buf[4];
+
+
+    // Report ID is at index 0 (0x01)
+
+    if (raw_hid_rx_buf[0] != 0x01) return;
+
+
+
+    // Command at index 1
+
+    if (raw_hid_rx_buf[1] == 0x01) {
+
+        uint8_t led_idx = raw_hid_rx_buf[2];
+
+        uint8_t r = raw_hid_rx_buf[3];
+
+        uint8_t g = raw_hid_rx_buf[4];
+
+        uint8_t b = raw_hid_rx_buf[5];
+
+
 
         ws2812_set_color(led_idx, r, g, b);
+
         ws2812_show();
+
     }
+
 }
+
+
 #endif
 
 void TMR0_interrupt();
-void TMR0_ISR() __interrupt(INT_NO_TMR0) {
+void TMR0_ISR() __interrupt(INT_NO_TMR0)
+{
     TMR0_interrupt();
 }
 
 #if defined(SPLIT_ENABLE) && !defined(SPLIT_SOFT_SERIAL_PIN)
 #ifdef SPLIT_SIDE_PERIPHERAL
 void UART0_interrupt();
-void UART0_ISR() __interrupt(INT_NO_UART0) {
+void UART0_ISR() __interrupt(INT_NO_UART0)
+{
     UART0_interrupt();
 }
 #endif
 
-static void UART0_init() {
+static void UART0_init()
+{
     // UART0 @ Timer1, 750k bps
     SM0 = 0;
     SM1 = 1;
@@ -68,11 +94,13 @@ static void UART0_init() {
 }
 #endif
 
-static void main() {
+static void main()
+{
     CLK_init();
 
     // Check if bootloader key (P1.1) is pressed (low)
-    if (BootKey == 0) {
+    if (BootKey == 0)
+    {
         bootloader();
     }
 
@@ -110,7 +138,8 @@ static void main() {
     WS2812_PIN = 0;
 
     // LED Chase on startup
-    for (uint8_t i = 0; i < WS2812_COUNT; i++) {
+    for (uint8_t i = 0; i < WS2812_COUNT; i++)
+    {
         ws2812_set_color(i, 20, 0, 20);
         ws2812_show();
         delay(1000 / WS2812_COUNT);
@@ -121,7 +150,8 @@ static void main() {
 
     EA = 1;
 
-    while (1) {
+    while (1)
+    {
         keyboard_scan();
 #ifdef RAW_HID_ENABLE
         raw_hid_task();

@@ -77,8 +77,8 @@ fn main() -> Result<()> {
 }
 
 fn send_color(device: &hidapi::HidDevice, index: u8, r: u8, g: u8, b: u8) -> Result<()> {
-    let mut buf = [0u8; 65];
-    buf[0] = 0x00; // Report ID
+    let mut buf = [0u8; 64];
+    buf[0] = 0x01; // Report ID
     buf[1] = 0x01; // Command: Set LED
     buf[2] = index;
     buf[3] = r;
