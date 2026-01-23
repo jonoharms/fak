@@ -21,10 +21,21 @@ class LedController:
             raise Exception(f"Could not find Raw HID device {hex(VID)}:{hex(PID)} with Usage Page {hex(USAGE_PAGE)}")
 
     def _find_device_path(self):
-        # hid.enumerate() in version 1.0.8 returns a list of DeviceInfo objects
+        # hid.enumerate() might return a list of dicts or DeviceInfo objects
         for info in hid.enumerate(VID, PID):
-            if info.usage_page == USAGE_PAGE:
-                return info.path
+            # Try to get usage_page regardless of type
+            usage_page = 0
+            path = None
+            
+            if isinstance(info, dict):
+                usage_page = info.get('usage_page', 0)
+                path = info.get('path')
+            else:
+                usage_page = getattr(info, 'usage_page', 0)
+                path = getattr(info, 'path', None)
+
+            if usage_page == USAGE_PAGE and path:
+                return path
         return None
 
     def open(self):
