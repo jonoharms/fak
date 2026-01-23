@@ -86,13 +86,16 @@ class LedController:
                         time.sleep(0.05)
                         self.set_color(i, 0, 0, 0)
                         time.sleep(0.01) 
-            
-            print("Flash White")
-            for i in range(led_count):
-                self.set_color(i, 50, 50, 50)
-            time.sleep(0.5)
-            for i in range(led_count):
-                self.set_color(i, 0, 0, 0)
+            for _ in range(loops):
+                print("Flash White")
+                for i in range(led_count):
+                    self.set_color(i, 50, 50, 50)
+                    time.sleep(0.01)
+                time.sleep(0.1)
+                for i in range(led_count):
+                    self.set_color(i, 0, 0, 0)
+                    time.sleep(0.01)
+                time.sleep(0.1)
                 
         except KeyboardInterrupt:
             pass
