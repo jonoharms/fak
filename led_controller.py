@@ -20,6 +20,13 @@ class LedController:
         if not self.path:
             raise Exception(f"Could not find Raw HID device {hex(VID)}:{hex(PID)} with Usage Page {hex(USAGE_PAGE)}")
 
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
     def _find_device_path(self):
         # hid.enumerate() might return a list of dicts or DeviceInfo objects
         for info in hid.enumerate(VID, PID):
