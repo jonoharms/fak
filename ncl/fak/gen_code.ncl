@@ -244,7 +244,6 @@ m%"
   }
 
   void keyboard_scan_user() {
-  %{if ir.defines.LED_ENABLE then "ws2812_show();" else ""}
   // Direct pins
   %{
     ir.kscan.direct
